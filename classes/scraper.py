@@ -1,11 +1,39 @@
 import traceback
 import re
-from curl_cffi import requests
+import requests
 import urllib
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+import logging
+from curl_adapter import CurlCffiAdapter
 
-session = requests.Session(impersonate="chrome")
+log = logging.getLogger(__name__)
+
+class LoggingRetry(Retry):
+  def sleep(self, response=None):
+    backoff = self.get_backoff_time()
+    retry_after = None
+
+    if response is not None:
+        retry_after = response.headers.get("Retry-After")
+
+    wait = retry_after or backoff
+
+    log.warning(
+        "Retrying after %s seconds (Retry-After=%s, backoff=%s)",
+        wait,
+        retry_after,
+        backoff
+    )
+
+    super().sleep(response)
+
+retry = LoggingRetry(total=5, status_forcelist=[429, 503], backoff_factor=1, respect_retry_after_header=True, raise_on_status=True, retry_after_max=60)
+session = requests.Session()
+session.mount("https://", CurlCffiAdapter(impersonate_browser_type="chrome"))
+session.mount("http://", CurlCffiAdapter(impersonate_browser_type="chrome"))
 session.headers.update({"Accept-Language": "hu-HU,hu;q=0.9,en-US;q=0.8,en;q=0.7"})
 
 def getURLParams(url):
