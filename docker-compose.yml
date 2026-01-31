@@ -1,9 +1,8 @@
-version: "3.8"
-
 services:
-    pyhabot:
-        container_name: pyhabot
-        build: .
-        restart: unless-stopped
-        volumes:
-            - .:/app
+  pyhabot:
+    container_name: pyhabot
+    hostname: pyhabot
+    image: matrixeler/pyhabot:latest
+    restart: unless-stopped
+    volumes:
+      - databank/:/app/databank

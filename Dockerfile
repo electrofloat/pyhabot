@@ -2,9 +2,13 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
+RUN mkdir -p /app/assets
+RUN mkdir -p /app/classes
 
-RUN pip install --upgrade pip
-RUN pip install --user -r requirements.txt
+COPY requirements.txt run.py ./
+COPY assets/ ./assets/
+COPY classes/ ./classes/
+
+RUN python3 -m pip install --upgrade pip && python3 -m pip install --no-cache-dir --user -r requirements.txt
 
 CMD ["sh", "-c", "python3 -u /app/run.py"]
