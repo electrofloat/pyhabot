@@ -1,23 +1,25 @@
 import dotenv
+import os
 config = dotenv.dotenv_values(".env")
 
 
 def main():
-    if config["TOKEN"] == "False":
+    TOKEN = os.getenv("TOKEN", "False") if config.get("TOKEN", "False") == "False" else config.get("TOKEN")
+    if TOKEN == "False":
         print(f"Missing bot token.")
         return
 
-    if config["INTEGRATION"] == "discord":
+    INTEGRATION = os.getenv("INTEGRATION", "Unkown") if config.get("INTEGRATION", "Unknown") == "Unknown" else config.get("INTEGRATION")
+    if INTEGRATION == "discord":
         import classes.integrations.discord as DiscordIntegration
-        DiscordIntegration.init(config["TOKEN"])
+        DiscordIntegration.init(TOKEN)
         
-    elif config["INTEGRATION"] == "telegram":
+    elif INTEGRATION == "telegram":
         import classes.integrations.telegram as TelegramIntegration
-        TelegramIntegration.init(config["TOKEN"])
+        TelegramIntegration.init(TOKEN)
 
     else:
-        print("Expected valid Integration-type at command line argument 1, got " + str(config["INTEGRATION"]))
-
+        print("Expected valid Integration-type at command line argument 1, got " + str(INTEGRATION))
 
 if __name__ == "__main__":
     main()

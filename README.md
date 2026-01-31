@@ -31,12 +31,10 @@ Ha szeretnéd átvizsgáltatni vele az eddigi hirdetéseket (amelyek a figyelő 
 
 # Használat (Docker)
 
-0. Feltételezzük, hogy a Docker telepítve van és minimális ismeretekkel rendelkezel.
-1. **.env** fájl létrehozása _(**.env.example** másolata)_: `copy .env.example .env`
-2. **.env** config fájl megnyitása és kitöltése
-3. Indítás a `docker compose up -d` paranccsal
-4. Bot meghívása a szerverre/szobába, és jogot adni neki az üzenetek olvasásához/küldéséhez. (Discord esetében az indításkor megjelenő linken keresztül)
-5. Hirdetésfigyelő hozzáadása: **Hogyan használd** szekcióban részletezve
+0. **docker-compose.yml** fájl szerkesztése (INTEGRATION, TOKEN változók kitöltése, volumes átírása, ha szükséges)
+1. Indítás a `docker compose up -d` paranccsal
+2. Bot meghívása a szerverre/szobába, és jogot adni neki az üzenetek olvasásához/küldéséhez. (Discord esetében az indításkor megjelenő linken keresztül)
+3. Hirdetésfigyelő hozzáadása: **Hogyan használd** szekcióban részletezve
 
 # Integrációk
 
