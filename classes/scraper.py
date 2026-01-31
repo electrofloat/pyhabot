@@ -4,6 +4,36 @@ import requests
 import urllib
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+import logging
+
+log = logging.getLogger(__name__)
+
+class LoggingRetry(Retry):
+  def sleep(self, response=None):
+    backoff = self.get_backoff_time()
+    retry_after = None
+
+    if response is not None:
+        retry_after = response.headers.get("Retry-After")
+
+    wait = retry_after or backoff
+
+    log.warning(
+        "Retrying after %s seconds (Retry-After=%s, backoff=%s)",
+        wait,
+        retry_after,
+        backoff
+    )
+
+    super().sleep(response)
+
+retry = LoggingRetry(total=5, status_forcelist=[429, 503], backoff_factor=1, respect_retry_after_header=True, raise_on_status=True, retry_after_max=60)
+adapter = HTTPAdapter(max_retries=retry)
+session = requests.Session()
+session.mount("https://", adapter)
+session.mount("http://", adapter)
 
 def getURLParams(url):
     parsed_url = urllib.parse.urlparse(url)
@@ -11,7 +41,7 @@ def getURLParams(url):
 
 def scrapeCategoryName(url):
     try:
-        response = requests.get(url)
+        response = session.get(url)
         response.raise_for_status()
 
         html          = BeautifulSoup(response.text, "html.parser")
@@ -39,7 +69,7 @@ def convertDate(expression):
 
 def scrapeAds(url):
     try:
-        response = requests.get(url)
+        response = session.get(url)
         response.raise_for_status()
 
         parsed_url = urllib.parse.urlparse(url)
