@@ -1,9 +1,12 @@
 import traceback
 import re
-import requests
+from curl_cffi import requests
 import urllib
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
+
+session = requests.Session(impersonate="chrome")
+session.headers.update({"Accept-Language": "hu-HU,hu;q=0.9,en-US;q=0.8,en;q=0.7"})
 
 def getURLParams(url):
     parsed_url = urllib.parse.urlparse(url)
@@ -11,7 +14,7 @@ def getURLParams(url):
 
 def scrapeCategoryName(url):
     try:
-        response = requests.get(url)
+        response = session.get(url, timeout=30)
         response.raise_for_status()
 
         html          = BeautifulSoup(response.text, "html.parser")
@@ -39,7 +42,7 @@ def convertDate(expression):
 
 def scrapeAds(url):
     try:
-        response = requests.get(url)
+        response = session.get(url, timeout=30)
         response.raise_for_status()
 
         parsed_url = urllib.parse.urlparse(url)

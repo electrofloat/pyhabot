@@ -1,4 +1,5 @@
 import asyncio
+import random
 import requests
 import classes.commandhandler as commandhandler
 import classes.databank as databank
@@ -51,6 +52,7 @@ class Pyhabot():
                 lastseen = viewer["lastseen"] if "lastseen" in viewer else False
 
                 if "notifyon" in viewer:
+                    await asyncio.sleep(random.uniform(2, 5))
                     ads = scraper.scrapeAds(viewer["url"])
 
                     if not ads:
